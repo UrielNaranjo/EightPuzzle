@@ -1,5 +1,5 @@
 VPATH = src
-C++FLAGS = -g -ansi -pedantic -Wall -Werror
+C++FLAGS = -g -ansi -pedantic -Wall -Werror -std=c++11
 objects = $(addprefix obj/, main.o problem.o)
 
 bin/EightPuzzle: $(objects) | bin
