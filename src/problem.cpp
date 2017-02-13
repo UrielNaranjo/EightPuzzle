@@ -5,6 +5,8 @@ node::node()
 {}
 
 const node & node::operator=(const node &r){
+	this->dist = r.dist;
+	this->parent = r.parent;
 	for(auto i = 0; i < 3; i++){
 		for(auto j = 0; i < 3; j++){
 			this->puzzle.at(i).at(j) = r.puzzle.at(i).at(j);
@@ -50,85 +52,130 @@ bool node::operator==(const node &x) const{
 	return this->dist == x.dist;
 }
 
-EightPuzzle::EightPuzzle()
-{
-	goal.resize(3);
-	for(auto i = 0; i < 3; i++){
-		goal.at(i).resize(3);
-	}
-	goal.at(0).at(0) = 1;
-	goal.at(0).at(1) = 2;
-	goal.at(0).at(2) = 3;
-	goal.at(1).at(0) = 4;
-	goal.at(1).at(1) = 5;
-	goal.at(1).at(2) = 6;
-	goal.at(2).at(0) = 7;
-	goal.at(2).at(1) = 8;
-	goal.at(2).at(2) = -1;
-}
-
-EightPuzzle::EightPuzzle(node &v)
-{
-	goal.resize(3);
-
-	for(auto i = 0; i < 3; i++){
-		goal.at(i).resize(3);
-	}
-
-	goal.at(0).at(0) = 1;
-	goal.at(0).at(1) = 2;
-	goal.at(0).at(2) = 3;
-	goal.at(1).at(0) = 4;
-	goal.at(1).at(1) = 5;
-	goal.at(1).at(2) = 6;
-	goal.at(2).at(0) = 7;
-	goal.at(2).at(1) = 8;
-	goal.at(2).at(2) = -1;
-
-	frontier.push(v);
-}
-
-bool EightPuzzle::shiftup(){
+bool node::shiftup(){
 
 	return true;
 }
 
-bool EightPuzzle::shiftdown(){
+bool node::shiftdown(){
 
 	return true;
 }
 
-bool EightPuzzle::shiftleft(){
+bool node::shiftleft(){
 
 	return true;
 } 
 
-bool EightPuzzle::shiftright(){
+bool node::shiftright(){
 
 	return true;
 } 
 
-bool EightPuzzle::isGoal() const{
-	return true;
+int node::UniformCostSearch(const node &curr){
+	// h(n) = 0 for uniform cost search
+	return 0;
 }
 
-int EightPuzzle::UniformCostSearch(){
-
-	return -1;
+int node::MisplacedTile(const node &curr){
+	int ret = 0;
+	int current = 0;
+	std::vector<std::vector<int> > goal = 
+	{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, -1}
+	};
+	for(auto i = 0; i < 3; i++){
+		for(auto j = 0; j < 3; i++){
+			current = curr.puzzle.at(i).at(j);
+			if( (current != goal.at(i).at(j) ) && (current != -1) ){ 
+				ret++;
+			}
+		}
+	}
+	return ret;
 }
 
-int EightPuzzle::MisplacedTile(){
-
-	return -1;
+// get distance to where value should be
+// given the current location of the value
+int getManDist(int i, int j, int value){ 
+	int ret = 0;
+	if(value == 1){
+		if(i != 0){
+			ret+=i;	
+		}
+		if(j != 0){
+			ret+=j;
+		}
+	}
+	else if(value == 2){
+		if(i != 0){
+			ret+=i;	
+		}
+		if(j != 1){
+			ret+=j;
+		}
+	}
+	else if(value == 3){
+		if(i != 2){
+			ret+=i;	
+		}
+		if(j != 0){
+			ret+=j;
+		}
+	}
+	else if(value == 4){
+		if(i != 1){
+			ret+=i;	
+		}
+		if(j != 0){
+			ret+=j;
+		}
+	}
+	else if(value == 5){
+		if(i != 1){
+			ret+=i;	
+		}
+		if(j != 1){
+			ret+=j;
+		}
+	}
+	else if(value == 6){
+		if(i != 1){
+			ret+=i;	
+		}
+		if(j != 2){
+			ret+=j;
+		}
+	}
+	else if(value == 7){
+		if(i != 2){
+			ret+=i;	
+		}
+		if(j != 0){
+			ret+=j;
+		}
+	}
+	else if(value == 8){
+		if(i != 2){
+			ret+=i;	
+		}
+		if(j != 1){
+			ret+=j;
+		}
+	}
+	return ret;
 }
 
-int EightPuzzle::ManhattanDistance(){
-
-	return -1;
-}
-
-void EightPuzzle::SearchAlgorithm(int x){
-	int hn = 0;
-	int gn = 0;
-	hn = hn +gn; // test
+int node::ManhattanDistance(const node &curr){
+	int ret = 0;
+	for(auto i =0; i < 3; i++){
+		for(auto j=0; j<3; j++){
+			if(curr.puzzle.at(i).at(j) != -1){
+				ret += getManDist(i, j, curr.puzzle.at(i).at(j));
+			}
+		}
+	}
+	return ret;
 }
