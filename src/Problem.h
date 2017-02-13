@@ -2,20 +2,49 @@
 #define PROBLEM_H
 
 #include <vector>
+#include <queue>
 
-class EightPuzzle{
+class node{
+
+	protected:
+
+		int dist; // g(n) + h(n)
+
+		std::vector<std::vector<int> > puzzle; // current puzzle
+
+		node *parent; // parent of current puzzle
+	
+	public:
+		
+		node();
+
+		void setParent(node &);
+		node getParent();		
+		void setDist(int &);
+		int getDist();
+		const node & operator=( const node &);
+		bool operator<(const node &) const;
+		bool operator>(const node &) const;
+		bool operator<=(const node &) const;
+		bool operator>=(const node &) const;
+		bool operator==(const node &) const;
+};
+
+class EightPuzzle: public node{
 
 	private:
 
-		std::vector<int> puzzle;
+		std::priority_queue<node, std::vector<node>, std::greater<node> > frontier;
 
-		std::vector<int> goal;
+		std::vector<std::vector<int> > goal; // goal state
+
+		std::vector<node> explored;
 
 	public:
 
 		EightPuzzle();
 
-		EightPuzzle(std::vector<int> &v);
+		EightPuzzle(node &v);
 
 		bool shiftup();
 
@@ -25,15 +54,17 @@ class EightPuzzle{
 
 		bool shiftright();
 
-		void UniformCostSearch();
+		int UniformCostSearch(); // heuristic function
 
-		void MisplacedTile();
+		int MisplacedTile(); // heuristic function
 
-		void ManhattanDistance();
+		int ManhattanDistance(); // heuristic function
 
 		void SearchAlgorithm(int x);
 
-		bool isGoal() const;
+		bool isGoal() const; // check if we are at the goal state
+
+		int getCost() const; // get g(n) in f(n) = g(n) + h(n)
 };
 
 #endif

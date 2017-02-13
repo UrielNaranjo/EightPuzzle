@@ -1,23 +1,91 @@
 #include "Problem.h"
 
-EightPuzzle::EightPuzzle()
- : puzzle(9), goal(9) 
-{
-	for(auto i = 0; i < 8; i++){
-		goal.at(i) = i+1;
+node::node()
+ : dist(0), parent(NULL)
+{}
+
+const node & node::operator=(const node &r){
+	for(auto i = 0; i < 3; i++){
+		for(auto j = 0; i < 3; j++){
+			this->puzzle.at(i).at(j) = r.puzzle.at(i).at(j);
+		}
 	}
-	goal.at(8) = -1; // this will be the space in the puzzle 
+	return *this;
 }
 
-EightPuzzle::EightPuzzle(std::vector<int> &v)
- : puzzle(9), goal(9)
-{
-	puzzle = v;
-	for(auto i = 0; i < 8; i++){
-		goal.at(i) = i+1;
-	}
-	goal.at(8) = -1; // this will be the space in the puzzle 
+void node::setParent(node &x){
+	this->parent = &x;	
+}
 
+node node::getParent(){
+	node temp = *parent;
+	return temp;
+}
+
+void node::setDist(int &x){
+	this->dist = x;
+}
+
+int node::getDist(){
+	return this->dist;
+}
+
+bool node::operator<(const node &x) const{
+	return (this->dist < x.dist);
+}
+
+bool node::operator>(const node &x) const{
+	return this->dist > x.dist;
+}
+
+bool node::operator<=(const node &x) const{
+	return (this->dist <= x.dist);
+}
+
+bool node::operator>=(const node &x) const{
+	return this->dist >= x.dist;
+} 
+
+bool node::operator==(const node &x) const{
+	return this->dist == x.dist;
+}
+
+EightPuzzle::EightPuzzle()
+{
+	goal.resize(3);
+	for(auto i = 0; i < 3; i++){
+		goal.at(i).resize(3);
+	}
+	goal.at(0).at(0) = 1;
+	goal.at(0).at(1) = 2;
+	goal.at(0).at(2) = 3;
+	goal.at(1).at(0) = 4;
+	goal.at(1).at(1) = 5;
+	goal.at(1).at(2) = 6;
+	goal.at(2).at(0) = 7;
+	goal.at(2).at(1) = 8;
+	goal.at(2).at(2) = -1;
+}
+
+EightPuzzle::EightPuzzle(node &v)
+{
+	goal.resize(3);
+
+	for(auto i = 0; i < 3; i++){
+		goal.at(i).resize(3);
+	}
+
+	goal.at(0).at(0) = 1;
+	goal.at(0).at(1) = 2;
+	goal.at(0).at(2) = 3;
+	goal.at(1).at(0) = 4;
+	goal.at(1).at(1) = 5;
+	goal.at(1).at(2) = 6;
+	goal.at(2).at(0) = 7;
+	goal.at(2).at(1) = 8;
+	goal.at(2).at(2) = -1;
+
+	frontier.push(v);
 }
 
 bool EightPuzzle::shiftup(){
@@ -41,34 +109,26 @@ bool EightPuzzle::shiftright(){
 } 
 
 bool EightPuzzle::isGoal() const{
-	for(auto i = 0; i < 9; i++){
-		if(this->puzzle.at(i) != this->goal.at(i)){
-			return false;
-		}
-	}
 	return true;
 }
 
-void EightPuzzle::UniformCostSearch(){
+int EightPuzzle::UniformCostSearch(){
 
+	return -1;
 }
 
-void EightPuzzle::MisplacedTile(){
+int EightPuzzle::MisplacedTile(){
 
+	return -1;
 }
 
-void EightPuzzle::ManhattanDistance(){
+int EightPuzzle::ManhattanDistance(){
 
+	return -1;
 }
 
 void EightPuzzle::SearchAlgorithm(int x){
-	if(x == 1){
-		this->UniformCostSearch();
-	}
-	else if(x == 2){
-		this->MisplacedTile();
-	}
-	else if(x == 3){
-		this->ManhattanDistance();
-	}
+	int hn = 0;
+	int gn = 0;
+	hn = hn +gn; // test
 }
