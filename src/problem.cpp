@@ -4,7 +4,7 @@
 #include <utility>
 
 node::node()
- : dist(1000), parent(NULL)
+ : g(1000), h(1000), dist(1000), parent(NULL)
 {
 	puzzle.resize(3);
 	for(auto i = 0; i < 3; i++){
@@ -13,6 +13,8 @@ node::node()
 }
 
 const node & node::operator=(const node &r){
+	this->g = r.g;
+	this->h = r.h;
 	this->dist = r.dist;
 	this->parent = r.parent;
 	this->setPuzzle(r.puzzle);
@@ -28,12 +30,44 @@ node node::getParent(){
 	return temp;
 }
 
-void node::setDist(int x){
-	this->dist = x;
+void node::setDist(int gn, int hn){
+	this->g = gn; 
+	this->h = hn;
+	this->dist = gn + hn;
+}
+
+int node::getGn(){
+	return this->g;
+}
+
+int node::getHn(){
+	return this->h;
 }
 
 int node::getDist(){
 	return this->dist;
+}
+
+bool node::isGoal(){
+	
+	std::vector<std::vector<int> > goal = 
+	{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, -1}
+	};
+
+	int current;
+	for(auto i = 0; i < 3; i++){
+		for(auto j = 0; j < 3; j++){
+			current = this->puzzle.at(i).at(j);
+			if( (current != goal.at(i).at(j) )  ){ 
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 void node::setPuzzle(const std::vector<std::vector<int> > &v){
@@ -45,7 +79,8 @@ void node::setPuzzle(const std::vector<std::vector<int> > &v){
 }
 
 std::ostream &operator<<(std::ostream &os, const node &x){
-	os << "Distance: " << x.dist << '\n';
+	os << "g(n) = " << x.g << '\n';
+	os << "h(n) = " << x.h << '\n';
 	os << "Puzzle: \n";
 	for(auto i = 0; i < 3; i++){
 		for(auto j = 0; j <3; j++){
@@ -73,7 +108,14 @@ bool node::operator>=(const node &x) const{
 } 
 
 bool node::operator==(const node &x) const{
-	return this->dist == x.dist;
+	for(auto i = 0; i < 3; i++){
+		for(auto j = 0; j < 3; j++){
+			if(this->puzzle.at(i).at(j) != x.puzzle.at(i).at(j)){
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 std::pair<int,int> node::findBlank(){

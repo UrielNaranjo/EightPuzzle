@@ -6,6 +6,8 @@
 class node{
 
 	private:
+		int g; // distance from initial node
+		int h; // heuristic distance
 		int dist; // g(n) + h(n)
 		std::vector<std::vector<int> > puzzle; // current puzzle
 		node *parent; // parent of current puzzle
@@ -16,9 +18,12 @@ class node{
 
 		node getParent();		
 		int getDist();
-		void setDist(int);
+		int getGn();
+		int getHn();
+		void setDist(int, int);
 		void setParent(node &);
 		void setPuzzle(const std::vector<std::vector<int> > &);
+		bool isGoal();
 		std::pair<int,int> findBlank();
 
 		const node & operator=( const node &);
