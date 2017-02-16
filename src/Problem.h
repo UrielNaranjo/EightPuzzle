@@ -2,6 +2,7 @@
 #define PROBLEM_H
 
 #include <vector>
+#include <string>
 
 class node{
 
@@ -9,6 +10,7 @@ class node{
 		int g; // distance from initial node
 		int h; // heuristic distance
 		int dist; // g(n) + h(n)
+		std::string hashstr; // hash value
 		std::vector<std::vector<int> > puzzle; // current puzzle
 		node *parent; // parent of current puzzle
 	
@@ -20,6 +22,7 @@ class node{
 		int getDist();
 		int getGn();
 		int getHn();
+		std::string getHash() const;
 		void setDist(int, int);
 		void setParent(node &);
 		void setPuzzle(const std::vector<std::vector<int> > &);
