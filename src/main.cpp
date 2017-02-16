@@ -1,14 +1,15 @@
 #include <iostream> 
 #include "Problem.h"
+#include <unordered_set>
 #include <queue>
 
 using namespace std;
 
 bool isInExplored(node &n, vector<node> &v){
-	for(auto i =0; i < v.size(); i++){
-		if(n == v.at(i)){
-			return true;
-		}
+	for(auto i = 0; i < v.size(); i++){
+			if(n == v.at(i)){
+				return true;
+			}
 	}
 	return false;
 }
@@ -18,8 +19,8 @@ void expand(node &n, vector<node> &v, priority_queue<node, vector<node>, greater
 	node temp = n;
 	int hn = 0;
 	int gn = n.getGn() + 1; // one level deeper than current node
-	temp = temp.shiftup();
-	if( !(temp == n) && !(isInExplored(temp, v)) ){
+
+	if( (temp.shiftup()) && !(isInExplored(temp, v)) ){
 		if(s == 1){
 			hn = temp.UniformCostSearch();
 		}
@@ -35,8 +36,7 @@ void expand(node &n, vector<node> &v, priority_queue<node, vector<node>, greater
 	}
 
 	temp = n;
-	temp = temp.shiftdown();
-	if( !(temp == n) && !(isInExplored(temp, v)) ){
+	if( (temp.shiftdown()) && !(isInExplored(temp, v)) ){
 		if(s == 1){
 			hn = temp.UniformCostSearch();
 		}
@@ -52,8 +52,7 @@ void expand(node &n, vector<node> &v, priority_queue<node, vector<node>, greater
 	}
 
 	temp =n;
-	temp = temp.shiftleft();
-	if( !(temp == n) && !(isInExplored(temp, v)) ){
+	if( (temp.shiftleft()) && !(isInExplored(temp, v)) ){
 		if(s == 1){
 			hn = temp.UniformCostSearch();
 		}
@@ -69,8 +68,7 @@ void expand(node &n, vector<node> &v, priority_queue<node, vector<node>, greater
 	}
 
 	temp = n;
-	temp = temp.shiftright();
-	if( !(temp == n) && !(isInExplored(temp, v)) ){
+	if( (temp.shiftright()) && !(isInExplored(temp, v)) ){
 		if(s == 1){
 			hn = temp.UniformCostSearch();
 		}
@@ -88,23 +86,21 @@ void expand(node &n, vector<node> &v, priority_queue<node, vector<node>, greater
 
 int main(int argc, char **argv){
 
-	int search = 3;
-	vector<node> explored;
+	int search = 1; // heuristic funtion to be used. Default is 1
+	int gn = 0; // g(n) for root node 
+	int hn = 0; // h(n) varies depending on heuristic
+	int maxnodes = 1; // initially we have one node in queue
+	node curr; // current node we are expanding
+	node root, goal; // initial node we get from input
+	bool isValid = false; // set to true if we find a goal state
+	vector<node> explored; // explored set of nodes
+	vector<vector<int> > p; // initial puzzle state 
 	priority_queue<node, vector<node>, greater<node> > frontier;
 
-	vector<vector<int> > p = 
-	{
-		{1,2,3},
-		{4,8,-1},
-		{7,6,5}
-	};
-
-	node root, goal;
+	// initialize initial state
 	root.setPuzzle(p);
-	int gn = 0;
-	int hn = 0;
 	if(search == 1){
-		int hn = root.UniformCostSearch();
+		hn = root.UniformCostSearch();
 		root.setDist(gn,hn);
 	}
 	else if(search == 2){
@@ -115,11 +111,14 @@ int main(int argc, char **argv){
 		hn = root.ManhattanDistance();
 		root.setDist(gn, hn);
 	}
+
 	frontier.push(root);
 
-	node curr;
-	bool isValid = false;
 	while( !(frontier.empty()) ){
+
+		if(frontier.size() > maxnodes){
+			maxnodes = frontier.size();
+		}
 
 		curr = frontier.top();
 		frontier.pop();
@@ -144,6 +143,12 @@ int main(int argc, char **argv){
 	else{
 		cout << "\nYou've reached the end goal!!" << endl;
 	}
+
+	cout << endl << "To solve this problem the search algorithm expanded a total of ";
+	cout << explored.size() << " nodes." << endl;
+	cout << "The maximum number of nodes in the queue at any one time was ";
+	cout << maxnodes << " nodes"<< endl;
+	cout << "The depth of the goal node was " << goal.getGn() << "." << endl;
 
 	return 0;
 }

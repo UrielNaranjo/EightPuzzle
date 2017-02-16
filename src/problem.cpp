@@ -132,48 +132,48 @@ std::pair<int,int> node::findBlank(){
 	return ret;
 }
 
-node node::shiftup(){
-	node ret = *this; 
-	std::pair<int,int> blank = ret.findBlank();
+bool node::shiftup(){
+	std::pair<int,int> blank = this->findBlank();
 	int i = blank.first;
 	int j = blank.second;
 	if(i != 0){
-		std::swap(ret.puzzle.at(i).at(j), ret.puzzle.at(i-1).at(j));
+		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i-1).at(j));
+		return true;
 	}
-	return ret;
+	return false;
 }
 
-node node::shiftdown(){
-	node ret = *this; 
-	std::pair<int,int> blank = ret.findBlank();
+bool node::shiftdown(){
+	std::pair<int,int> blank = this->findBlank();
 	int i = blank.first;
 	int j = blank.second;
 	if(i != 2){
-		std::swap(ret.puzzle.at(i).at(j), ret.puzzle.at(i+1).at(j));
+		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i+1).at(j));
+		return true;
 	}
-	return ret;
+	return false;
 }
 
-node node::shiftleft(){
-	node ret = *this; 
-	std::pair<int,int> blank = ret.findBlank();
+bool node::shiftleft(){
+	std::pair<int,int> blank = this->findBlank();
 	int i = blank.first;
 	int j = blank.second;
 	if(j != 0){
-		std::swap(ret.puzzle.at(i).at(j), ret.puzzle.at(i).at(j-1));
+		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i).at(j-1));
+		return true;
 	}
-	return ret;
+	return false;
 } 
 
-node node::shiftright(){
-	node ret = *this; 
-	std::pair<int,int> blank = ret.findBlank();
+bool node::shiftright(){
+	std::pair<int,int> blank = this->findBlank();
 	int i = blank.first;
 	int j = blank.second;
 	if(j != 2){
-		std::swap(ret.puzzle.at(i).at(j), ret.puzzle.at(i).at(j+1));
+		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i).at(j+1));
+		return true;
 	}
-	return ret;
+	return false;
 } 
 
 int node::UniformCostSearch(){

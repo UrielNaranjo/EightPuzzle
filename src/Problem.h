@@ -35,10 +35,10 @@ class node{
 
 		friend std::ostream &operator<<(std::ostream &os, const node &);
 
-		node shiftup();
-		node shiftdown();
-		node shiftleft();
-		node shiftright();
+		bool shiftup();
+		bool shiftdown();
+		bool shiftleft();
+		bool shiftright();
 
 		int UniformCostSearch(); // heuristic function
 		int MisplacedTile(); // heuristic function
