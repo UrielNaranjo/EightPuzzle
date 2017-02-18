@@ -3,6 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <unordered_set>
+#include <queue>
+
+extern int N; // NxN puzzle
 
 class node{
 
@@ -10,8 +14,7 @@ class node{
 		int g; // distance from initial node
 		int h; // heuristic distance
 		int dist; // g(n) + h(n)
-		std::string hashstr; // hash value
-		std::vector<std::vector<int> > puzzle; // current puzzle
+		std::string puzzle; // puzzle of node
 		node *parent; // parent of current puzzle
 	
 	public:
@@ -22,12 +25,13 @@ class node{
 		int getDist();
 		int getGn();
 		int getHn();
-		std::string getHash() const;
+		std::string getPuzzle() const;
 		void setDist(int, int);
 		void setParent(node &);
-		void setPuzzle(const std::vector<std::vector<int> > &);
+		void setPuzzle(const std::string &);
 		bool isGoal();
-		std::pair<int,int> findBlank();
+		int findBlank();
+		void trace();
 
 		const node & operator=( const node &);
 		bool operator<(const node &) const;
@@ -46,6 +50,10 @@ class node{
 		int UniformCostSearch(); // heuristic function
 		int MisplacedTile(); // heuristic function
 		int ManhattanDistance(); // heuristic function
+		bool isInExplored(std::unordered_set<std::string> &);
+		void expand(std::unordered_set<std::string> &v, 
+						std::priority_queue<node, std::vector<node>, 
+									std::greater<node> > &f, int s);
 };
 
 #endif

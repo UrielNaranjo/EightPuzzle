@@ -2,15 +2,13 @@
 #include <iostream> 
 #include <stdlib.h>
 #include <utility>
+#include <stack>
+
+int N = 3;
 
 node::node()
- : g(1000), h(1000), dist(1000), hashstr(""), parent(NULL)
-{
-	puzzle.resize(3);
-	for(auto i = 0; i < 3; i++){
-		puzzle.at(i).resize(3);
-	}
-}
+ : g(1000), h(1000), dist(1000), puzzle(""), parent(NULL)
+{}
 
 const node & node::operator=(const node &r){
 	this->g = r.g;
@@ -26,8 +24,7 @@ void node::setParent(node &x){
 }
 
 node node::getParent(){
-	node temp = *parent;
-	return temp;
+	return *this->parent;
 }
 
 void node::setDist(int gn, int hn){
@@ -48,41 +45,53 @@ int node::getDist(){
 	return this->dist;
 }
 
-std::string node::getHash()const{
-	return this->hashstr;
+std::string node::getPuzzle()const{
+	return this->puzzle;
 }
 
 bool node::isGoal(){
-	
     std::string goal = "123456780";
-    if(this->hashstr != goal){
-        return false;
+    if(this->puzzle == goal){
+        return true;
     }
-	return true;
+	return false;
 }
 
-void node::setPuzzle(const std::vector<std::vector<int> > &v){
-    std::string tmp = "";
-	for(auto i =0; i < 3; i++){
-		for(auto j = 0; j < 3; j++){
-			this->puzzle.at(i).at(j) = v.at(i).at(j);
-			tmp += v.at(i).at(j) + '0';
-		}
-	}
-    this->hashstr = tmp;
+void node::setPuzzle(const std::string &v){
+    this->puzzle = v;
 }
 
 std::ostream &operator<<(std::ostream &os, const node &x){
 	os << "g(n) = " << x.g << '\n';
 	os << "h(n) = " << x.h << '\n';
 	os << "Puzzle: \n";
-	for(auto i = 0; i < 3; i++){
-		for(auto j = 0; j <3; j++){
-			os << x.puzzle.at(i).at(j) << ((j != 3) ? " " : "");
+	int size = N*N;
+	for(auto i = 0; i < size; i++){
+		os << x.puzzle.at(i);
+		if((i+1)%3){
+			os << " ";
 		}
-		os << '\n';
+		else{
+			os << "\n";
+		}
 	}
 	return os;
+}
+
+void node::trace(){
+	node curr = *this;
+	node *minPath = &curr;
+	std::stack<node> s;
+
+	while(minPath->parent){
+		s.push(*minPath);
+		minPath = minPath->parent;
+	}
+
+	while(!(s.empty())){
+		std::cout << s.top() << std::endl;
+		s.pop();
+	}
 }
 
 bool node::operator<(const node &x) const{
@@ -102,77 +111,51 @@ bool node::operator>=(const node &x) const{
 } 
 
 bool node::operator==(const node &x) const{
-	if(this->hashstr == x.hashstr){
+	if(this->puzzle == x.puzzle){
 		return true;
 	}
 	return false;
 }
 
-std::pair<int,int> node::findBlank(){
-	std::pair<int,int> ret(0,0);
-	for(auto i = 0; i < 3; i++){
-		for(auto j = 0; j < 3; j++){
-			if(this->puzzle.at(i).at(j) == 0){
-				ret.first = i;
-				ret.second = j;
-				return ret;
-			}
-		}
-	}
-	return ret;
+int node::findBlank(){
+	return this->puzzle.find('0');
 }
 
 bool node::shiftup(){
-	std::pair<int,int> blank = this->findBlank();
-	int i = blank.first;
-	int j = blank.second;
-	if(i != 0){
-        int x = i*3+j;
-        int y = x - 3;
-		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i-1).at(j));
-		std::swap(this->hashstr.at(x), this->hashstr.at(y));
+	int blank = this->findBlank();
+	if(blank > (N-1)){
+        int y = blank - N;
+		std::swap(this->puzzle.at(blank), this->puzzle.at(y));
 		return true;
 	}
 	return false;
 }
 
 bool node::shiftdown(){
-	std::pair<int,int> blank = this->findBlank();
-	int i = blank.first;
-	int j = blank.second;
-	if(i != 2){
-        int x = i*3+j;
-        int y = x + 3;
-		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i+1).at(j));
-		std::swap(this->hashstr.at(x), this->hashstr.at(y));
+	int blank = this->findBlank();
+	if(blank < (N*2)){
+        int y = blank + N;
+		std::swap(this->puzzle.at(blank), this->puzzle.at(y));
 		return true;
 	}
 	return false;
 }
 
 bool node::shiftleft(){
-	std::pair<int,int> blank = this->findBlank();
-	int i = blank.first;
-	int j = blank.second;
-	if(j != 0){
-        int x = i*3+j;
-        int y = x - 1;
-		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i).at(j-1));
-		std::swap(this->hashstr.at(x), this->hashstr.at(y));
+	int blank = this->findBlank();
+	if( (blank % N) != 0){
+        int y = blank - 1;
+		std::swap(this->puzzle.at(blank), this->puzzle.at(y));
 		return true;
 	}
 	return false;
 } 
 
 bool node::shiftright(){
-	std::pair<int,int> blank = this->findBlank();
-	int i = blank.first;
-	int j = blank.second;
-	if(j != 2){
-        int x = i*3+j;
-        int y = x + 1;
-		std::swap(this->puzzle.at(i).at(j), this->puzzle.at(i).at(j+1));
-		std::swap(this->hashstr.at(x), this->hashstr.at(y));
+	int blank = this->findBlank();
+	if( ((blank-N+1) % N) != 0){
+        int y = blank + 1;
+		std::swap(this->puzzle.at(blank), this->puzzle.at(y));
 		return true;
 	}
 	return false;
@@ -185,104 +168,143 @@ int node::UniformCostSearch(){
 
 int node::MisplacedTile(){
 	int ret = 0;
-	int current = -1;
-	std::vector<std::vector<int> > goal = 
-	{
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 0}
-	};
 
-	for(auto i = 0; i < 3; i++){
-		for(auto j = 0; j < 3; j++){
-			current = this->puzzle.at(i).at(j);
-			if( (current != goal.at(i).at(j) ) && (current != 0) ){ 
-				ret++;
-			}
+	std::string goal = "123456780";
+
+	for(auto i = 0; i < goal.size(); i++){
+		if(this->puzzle.at(i) != goal.at(i)){
+			ret++;
 		}
 	}
+	
 	return ret;
+}
+
+int getRow(int pos){
+	int row = 0;
+	int size = N*N;
+	for(auto i = N; i <= size; i+=N){
+		if( (pos >= (i-N) ) && (pos < i) ){
+			row = (i / N) -1; 
+			return row;
+		}
+	}
+	return -1;
+}
+
+int getCol(int pos){
+	for(auto i = 0; i < N; i++){
+		if( ((pos-i) % N == 0) ){
+			return i; 
+		}
+	}
+	return -1;
 }
 
 // get distance to where value should be
 // given the current location of the value
-int getManDist(int i, int j, int value){ 
+int getManDist(char value, int pos){ 
 	int ret = 0;
-	if(value == 1){
-		if(i != 0){
-			ret+=i;	
-		}
-		if(j != 0){
-			ret+=j;
-		}
-	}
-	else if(value == 2){
-		if(i != 0){
-			ret+=i;	
-		}
-		if(j != 1){
-			ret+= abs(j-1);
-		}
-	}
-	else if(value == 3){
-		if(i != 0){
-			ret+=abs(i-2);	
-		}
-		if(j != 2){
-			ret+=j;
-		}
-	}
-	else if(value == 4){
-		if(i != 1){
-			ret+=abs(i-1);	
-		}
-		if(j != 0){
-			ret+=j;
-		}
-	}
-	else if(value == 5){
-		if(i != 1){
-			ret+=abs(i-1);	
-		}
-		if(j != 1){
-			ret+=abs(j-1);
-		}
-	}
-	else if(value == 6){
-		if(i != 1){
-			ret+=abs(i-1);	
-		}
-		if(j != 2){
-			ret+=abs(j-2);
-		}
-	}
-	else if(value == 7){
-		if(i != 2){
-			ret+=abs(i-2);	
-		}
-		if(j != 0){
-			ret+=j;
-		}
-	}
-	else if(value == 8){
-		if(i != 2){
-			ret+= abs(i-2);	
-		}
-		if(j != 1){
-			ret+=abs(j-1);
-		}
-	}
+
+	std::string goal = "123456780";
+	int goalpos = goal.find(value);
+
+	int	i = getRow(pos);
+	int j = getCol(pos);
+	int k = getRow(goalpos);
+	int l = getCol(goalpos);
+	ret = abs(i-k) + abs(j-l);	
+
 	return ret;
 }
 
 int node::ManhattanDistance(){
 	int ret = 0;
-	for(auto i =0; i < 3; i++){
-		for(auto j=0; j<3; j++){
-			if(this->puzzle.at(i).at(j) != 0){
-				ret += getManDist(i, j, this->puzzle.at(i).at(j));
-			}
-		}
+	int size = N*N;
+	std::string goal = "123456780";
+	char value = '0';
+	for(auto i =0; i < size; i++){
+		value = this->puzzle.at(i);
+		if((value != '0') && (value != goal.at(i)) )
+			ret += getManDist(value,i);	
 	}
 	return ret;
+}
+
+// check if the node is a repeated state
+bool node::isInExplored(std::unordered_set<std::string> &v){
+	if(v.find(this->getPuzzle()) == v.end()){
+		return false;
+	}
+	return true;
+}
+
+void node::expand(std::unordered_set<std::string> &v, std::priority_queue<node, 
+				std::vector<node>, std::greater<node> > &f,	int s){
+	node temp = *this;
+	int hn = 0;
+	int gn = this->getGn() + 1; // one level deeper than current node
+
+	if( (temp.shiftup()) && !(temp.isInExplored(v)) ){
+		if(s == 1){
+			hn = temp.UniformCostSearch();
+		}
+		else if(s == 2){
+			hn = temp.MisplacedTile();
+		}
+		else if(s== 3){
+			hn = temp.ManhattanDistance();
+		}
+		temp.setDist(gn, hn);
+		temp.setParent(*this);
+		f.push(temp);
+	}
+
+	temp = *this;
+	if( (temp.shiftdown()) && !(temp.isInExplored(v)) ){
+		if(s == 1){
+			hn = temp.UniformCostSearch();
+		}
+		else if(s == 2){
+			hn = temp.MisplacedTile();
+		}
+		else if(s == 3){
+			hn = temp.ManhattanDistance();
+		}
+		temp.setDist(gn, hn);
+		temp.setParent(*this);
+		f.push(temp);
+	}
+
+	temp = *this;
+	if( (temp.shiftleft()) && !(temp.isInExplored(v)) ){
+		if(s == 1){
+			hn = temp.UniformCostSearch();
+		}
+		else if(s == 2){
+			hn = temp.MisplacedTile();
+		}
+		else if(s == 3){
+			hn = temp.ManhattanDistance();
+		}
+		temp.setDist(gn, hn);
+		temp.setParent(*this);
+		f.push(temp);
+	}
+	
+	temp =*this;
+	if( (temp.shiftright()) && !(temp.isInExplored(v)) ){
+		if(s == 1){
+			hn = temp.UniformCostSearch();
+		}
+		else if(s == 2){
+			hn = temp.MisplacedTile();
+		}
+		else if(s == 3){
+			hn = temp.ManhattanDistance();
+		}
+		temp.setDist(gn, hn);
+		temp.setParent(*this);
+		f.push(temp);
+	}
 }

@@ -1,125 +1,55 @@
 #include <iostream> 
-#include "problem.h"
 #include <unordered_set>
 #include <queue>
+#include "problem.h"
 
 using namespace std;
-
-// check if the node is a repeated state
-bool isInExplored(node &n, unordered_set<string> &v){
-	if(v.find(n.getHash()) == v.end()){
-		return false;
-	}
-	return true;
-}
-
-// expand nodes with legal operations and add them to the frontier
-// if they are not a repeated state
-void expand(node &n, unordered_set<string> &v, priority_queue<node, vector<node>, 
-				greater<node> > &f,	int s){
-	node temp = n;
-	int hn = 0;
-	int gn = n.getGn() + 1; // one level deeper than current node
-
-	if( (temp.shiftup()) && !(isInExplored(temp, v)) ){
-		if(s == 1){
-			hn = temp.UniformCostSearch();
-		}
-		else if(s == 2){
-			hn = temp.MisplacedTile();
-		}
-		else if(s== 3){
-			hn = temp.ManhattanDistance();
-		}
-		temp.setDist(gn, hn);
-		temp.setParent(n);
-		f.push(temp);
-	}
-
-	temp = n;
-	if( (temp.shiftdown()) && !(isInExplored(temp, v)) ){
-		if(s == 1){
-			hn = temp.UniformCostSearch();
-		}
-		else if(s == 2){
-			hn = temp.MisplacedTile();
-		}
-		else if(s == 3){
-			hn = temp.ManhattanDistance();
-		}
-		temp.setDist(gn, hn);
-		temp.setParent(n);
-		f.push(temp);
-	}
-
-	temp =n;
-	if( (temp.shiftleft()) && !(isInExplored(temp, v)) ){
-		if(s == 1){
-			hn = temp.UniformCostSearch();
-		}
-		else if(s == 2){
-			hn = temp.MisplacedTile();
-		}
-		else if(s == 3){
-			hn = temp.ManhattanDistance();
-		}
-		temp.setDist(gn, hn);
-		temp.setParent(n);
-		f.push(temp);
-	}
-
-	temp = n;
-	if( (temp.shiftright()) && !(isInExplored(temp, v)) ){
-		if(s == 1){
-			hn = temp.UniformCostSearch();
-		}
-		else if(s== 2){
-			hn = temp.MisplacedTile();
-		}
-		else if(s == 3){
-			hn = temp.ManhattanDistance();
-		}
-		temp.setDist(gn, hn);
-		temp.setParent(n);
-		f.push(temp);
-	}
-}
 
 int main(int argc, char **argv){
 
 	int search = 1; // heuristic funtion to be used. Default is 1
+	int def = 1; // 1 is default puzzle. 2 is custom puzzle
 	int gn = 0; // g(n) for root node 
 	int hn = 0; // h(n) varies depending on heuristic
 	unsigned int maxnodes = 1; // initially we have one node in queue
-	node curr; // current node we are expanding
 	node root, goal; // initial node we get from input
 	bool isValid = false; // set to true if we find a goal state
 	unordered_set<string> explored; // explored set of nodes
 	vector<int> tmprow(3);
-	vector<vector<int> > p; // initial puzzle state 
+	string p = ""; // initial puzzle state 
+	char num;
 	priority_queue<node, vector<node>, greater<node> > frontier;
+	vector<node*> expanded; 
 
 	// prompt user for initial puzzle and choice of algorithm
 	cout << "Welcome to Uriel Naranjo's 8-puzzle solver." << endl << endl;
-	cout << "Enter your puzzle, use '0' to represent the blank." << endl << endl;
+	cout << "Type '1' to use default puzzle, or '2' to enter your own puzzle." << endl;
+	cin >> def;
+	cout << endl;
 
-	cout << "Enter the first row, use space or tabs between numbers." << endl;
-	for(auto i = 0; i < 3; i++){
-		cin >> tmprow.at(i); 
-	}
-	p.push_back(tmprow);
+	if(def == 2){
+		cout << "Enter your puzzle, use '0' to represent the blank." << endl << endl;
+		cout << "Enter the first row, use space or tabs between numbers." << endl;
+		for(auto i = 0; i < 3; i++){
+			cin >> num; 
+			p+=num;
+		}
 
-	cout << "Enter the second row, use space or tabs between numbers." << endl;
-	for(auto i = 0; i < 3; i++){
-		cin >> tmprow.at(i);
-	}
-	p.push_back(tmprow);
+		cout << "Enter the second row, use space or tabs between numbers." << endl;
+		for(auto i = 0; i < 3; i++){
+			cin >> num;
+			p+=num;
+		}
 
-	cout << "Enter the third row, use space or tabs between numbers." << endl;
-	for(auto i = 0; i < 3; i++){
-		cin >> tmprow.at(i);
+		cout << "Enter the third row, use space or tabs between numbers." << endl;
+		for(auto i = 0; i < 3; i++){
+			cin >> num;
+			p+=num;
+		}
 	}
-	p.push_back(tmprow);
+	else{
+		p = "123480765";
+	}
 
 	cout << "\nEnter your choice of algorithm" << endl;
 	cout << "\t1. Uniform Cost Search" << endl;
@@ -154,26 +84,27 @@ int main(int argc, char **argv){
 		}
 
 		// get next node to expand
-		curr = frontier.top();
+		node *curr = new node(frontier.top()); // current node we are expanding
+		expanded.push_back(curr);
 		frontier.pop();
 
 		// check if we have a goal state
 		// if we do then we are done
-		if(curr.isGoal()){
-			goal = curr;
+		if(curr->isGoal()){
+			goal = *expanded.at(expanded.size() - 1);
 			isValid = true;
 			break;
 		}
 
-		cout << "The best state to expand is: " << endl;
-		cout << curr;
-		cout << "Expanding this node..." << endl << endl;
+//		cout << "The best state to expand is: " << endl;
+//		cout << curr;
+//		cout << "Expanding this node..." << endl << endl;
 
 		// add node to explored
-		explored.insert(curr.getHash());
+		explored.insert(curr->getPuzzle());
 
 		// expand the node using operations available
-		expand(curr, explored, frontier, search);
+		expanded.at(expanded.size() -1)->expand(explored, frontier, search);
 	}
 
 	if(!isValid){
@@ -181,13 +112,22 @@ int main(int argc, char **argv){
 	}
 	else{
 		cout << "\nYou've reached the end goal!!" << endl;
+
+		cout << "The following is the solution trace from initial state to goal state: \n\n";
+
+		cout << root << endl;
+		goal.trace();
+
+		cout << endl << "To solve this problem the search algorithm expanded a total of ";
+		cout << explored.size() << " nodes." << endl;
+		cout << "The maximum number of nodes in the queue at any one time was ";
+		cout << maxnodes << " nodes"<< endl;
+		cout << "The depth of the goal node was " << goal.getGn() << "." << endl;
+	}	
+
+	for(auto i = 0; i < expanded.size(); i++){
+		delete expanded.at(i);
 	}
-
-	cout << endl << "To solve this problem the search algorithm expanded a total of ";
-	cout << explored.size() << " nodes." << endl;
-	cout << "The maximum number of nodes in the queue at any one time was ";
-	cout << maxnodes << " nodes"<< endl;
-	cout << "The depth of the goal node was " << goal.getGn() << "." << endl;
-
+	
 	return 0;
 }
