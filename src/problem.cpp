@@ -50,7 +50,15 @@ std::string node::getPuzzle()const{
 }
 
 bool node::isGoal(){
-    std::string goal = "123456780";
+
+    std::string goal = "";
+	int size = N*N;
+
+	for(auto i = 1; i < size; i++){
+		goal+= (i+'0');
+	}
+
+	goal += '0';
     if(this->puzzle == goal){
         return true;
     }
@@ -169,7 +177,14 @@ int node::UniformCostSearch(){
 int node::MisplacedTile(){
 	int ret = 0;
 
-	std::string goal = "123456780";
+	std::string goal = "";
+	int size = N*N;
+
+	for(auto i = 1; i < size; i++){
+		goal+= (i+'0');
+	}
+
+	goal += '0';
 
 	for(auto i = 0; i < goal.size(); i++){
 		if(this->puzzle.at(i) != goal.at(i)){
@@ -206,7 +221,15 @@ int getCol(int pos){
 int getManDist(char value, int pos){ 
 	int ret = 0;
 
-	std::string goal = "123456780";
+	std::string goal = "";
+	int size = N*N;
+
+	for(auto i = 1; i < size; i++){
+		goal+= (i+'0');
+	}
+
+	goal += '0';
+
 	int goalpos = goal.find(value);
 
 	int	i = getRow(pos);
