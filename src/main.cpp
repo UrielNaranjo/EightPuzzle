@@ -1,3 +1,8 @@
+// Name: Uriel Naranjo
+// SID: 861103173
+// username: unara001
+// CS 170 Project 1
+
 #include <iostream> 
 #include <unordered_set>
 #include <queue>
@@ -22,7 +27,7 @@ int main(int argc, char **argv){
 	vector<node*> expanded;  // allocate nodes in memory to keep track of address
 
 	// prompt user for initial puzzle and choice of algorithm
-	cout << "Welcome to Uriel Naranjo's 8-puzzle solver." << endl << endl;
+	cout << "Welcome to unara001's 8-puzzle solver." << endl << endl;
 	cout << "Type '1' to use default puzzle, or '2' to enter your own puzzle." << endl;
 	cin >> def;
 	cout << endl;

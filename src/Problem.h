@@ -1,3 +1,8 @@
+// Name: Uriel Naranjo
+// SID: 861103173
+// username: unara001
+// CS 170 Project 1
+
 #ifndef PROBLEM_H
 #define PROBLEM_H
 
