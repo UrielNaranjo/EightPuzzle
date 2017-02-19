@@ -108,7 +108,8 @@ int main(int argc, char **argv){
 	}
 
 	if(!isValid){
-		cerr << "\nThe puzzle is not solvable with the given initial state." << endl;
+		cerr << "\nThe puzzle is not solvable with the given initial state:" << endl;
+		cout << root << endl;
 	}
 	else{
 		cout << "\nYou've reached the end goal!!" << endl;
