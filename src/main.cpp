@@ -18,8 +18,8 @@ int main(int argc, char **argv){
 	vector<int> tmprow(3);
 	string p = ""; // initial puzzle state 
 	char num;
-	priority_queue<node, vector<node>, greater<node> > frontier;
-	vector<node*> expanded; 
+	priority_queue<node, vector<node>, greater<node> > frontier; // frontier
+	vector<node*> expanded;  // allocate nodes in memory to keep track of address
 
 	// prompt user for initial puzzle and choice of algorithm
 	cout << "Welcome to Uriel Naranjo's 8-puzzle solver." << endl << endl;
@@ -27,6 +27,7 @@ int main(int argc, char **argv){
 	cin >> def;
 	cout << endl;
 
+	// custom initial state
 	if(def == 2){
 		cout << "Enter your puzzle, use '0' to represent the blank." << endl << endl;
 		cout << "Enter the first row, use space or tabs between numbers." << endl;
@@ -47,6 +48,7 @@ int main(int argc, char **argv){
 			p+=num;
 		}
 	}
+	// default puzzle
 	else{
 		p = "123480765";
 	}
@@ -58,7 +60,7 @@ int main(int argc, char **argv){
 
 	cin >> search;
 
-	// initialize initial state
+	// initialize initial puzzle state 
 	root.setPuzzle(p);
 	if(search == 1){
 		hn = root.UniformCostSearch();
@@ -96,10 +98,6 @@ int main(int argc, char **argv){
 			break;
 		}
 
-//		cout << "The best state to expand is: " << endl;
-//		cout << curr;
-//		cout << "Expanding this node..." << endl << endl;
-
 		// add node to explored
 		explored.insert(curr->getPuzzle());
 
@@ -107,6 +105,7 @@ int main(int argc, char **argv){
 		expanded.at(expanded.size() -1)->expand(explored, frontier, search);
 	}
 
+	// if solution is not found, print intial puzzle and error message
 	if(!isValid){
 		cerr << "\nThe puzzle is not solvable with the given initial state:" << endl;
 		cout << root << endl;
@@ -116,6 +115,7 @@ int main(int argc, char **argv){
 
 		cout << "The following is the solution trace from initial state to goal state: \n\n";
 
+		// print solution trace
 		cout << root << endl;
 		goal.trace();
 
@@ -126,6 +126,7 @@ int main(int argc, char **argv){
 		cout << "The depth of the goal node was " << goal.getGn() << "." << endl;
 	}	
 
+	// deallocate memory
 	for(auto i = 0; i < expanded.size(); i++){
 		delete expanded.at(i);
 	}
