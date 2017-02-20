@@ -2,8 +2,8 @@
 Algorithm that solves the eight puzzle.
 
 #Installation
-$ git clone TODO # to do. uploading after due date to avoid others plagiarizing 
+$ git clone https://github.com/UrielNaranjo/EightPuzzle.git
 $ cd EightPuzzle
-$ git checkout project
+$ git checkout master
 $ make
 $ bin/EightPuzzle
